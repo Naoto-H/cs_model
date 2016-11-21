@@ -2,6 +2,7 @@
 # coding: UTF-8
 
 from def_class import * 
+from def_minFlow import *
 
 #ストラテジーのインスタンスのタプル生成
 VILLEGE = 500 #農村部の人の人件費
@@ -12,12 +13,14 @@ THING_C = 5000 #Cのパーツ経費
 THING_D = 1000 #Dのパーツ経費
 THING_E = 3000 #Eのパーツ経費
 
+'''
 s = [St(0, [], VILLEGE), 
 	St(0, ['A'], VILLEGE+THING_A),
 	St(0, ['B'], VILLEGE+THING_B),
-	St(0, ['A', 'B', 'C'], VILLEGE+THING_A+THING_B+THING_C)
+	St(0, ['A', 'B'], VILLEGE+THING_A+THING_B)
 	]
 '''
+
 s = [St(0, [], VILLEGE), 
 	St(0, ['A'], VILLEGE+THING_A),
 	St(0, ['B'], VILLEGE+THING_B),
@@ -83,12 +86,12 @@ s = [St(0, [], VILLEGE),
 	St(1, ['B', 'C', 'D', 'E'], URBAN+THING_B+THING_C+THING_D+THING_E),
 	St(1, ['A', 'B', 'C', 'D', 'E'], URBAN+THING_A+THING_B+THING_C+THING_D+THING_E)
 	]
-'''
+
 
 # タスクフローの木構造生成
 #高頻度	0.2325	4つ
 #低頻度	0.01	7つ
-'''root = Task(1.0, 0, [], True, [
+root = Task(1.0, 0, [], True, [
    	Task(0.2625, 0, [], True, [
    		Task(0.01, 0, [], True, []),
    		Task(0.2525, 0, [], True, [
@@ -118,10 +121,11 @@ s = [St(0, [], VILLEGE),
 			])
 		])	
 	])
-])'''
+])
 
-
+'''
 root = Task(1.0, 0, [], True, [
 	Task(0.8, 0, 'B', True, []),
 	Task(0.2, 0, 'A', True, [])
 ])
+'''

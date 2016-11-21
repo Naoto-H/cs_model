@@ -1,8 +1,8 @@
 # Coded by Naoto Hayashi
 # coding: UTF-8
 
-
 DEFAULT = 10000000
+
 #タスクノードのクラスTaskを定義
 class Task(object):
 	def __init__(self, prob, lev, thing, flag, children):
@@ -40,14 +40,15 @@ class TaskInFlow(object):
 		self.parent = parent #StInFlowクラス	
 		self.task = task #Taskクラス
 
-		self.c = DEFAULT
-		self.flag = False
+		self.c = 0
+		self.depth = 0
 
 	def setChildren_st(self, children_st): #children_stはStクラスのリスト		
 		for st in children_st:		
 			self.children.append(StInFlow([], None, st))
 		for child in self.children:
 			child.parent = self
+			child.depth = self.depth + 1
 
 class StInFlow(object):
 	def __init__(self, children, parent, st):
@@ -55,14 +56,15 @@ class StInFlow(object):
 		self.parent = parent #TaskInFlowクラス
 		self.st = st #Stクラス
 
-		self.c = DEFAULT
-		self.flag = False
+		self.c = 0
+		self.depth = 0
 
 	def setChildren_task(self, children_task):
 		for task in children_task: #Task型
 			self.children.append(TaskInFlow([], None, task))
 		for child in self.children:
 	   		child.parent = self 
+	   		child.depth = self.depth + 1
 
 def MakeTaskStFlow(TIF, Strategies): #インスタンスTIFはTaskInFlowクラス
 
@@ -180,28 +182,3 @@ def checkBelowFlags(T, count): #TはTaskクラスのインスタンス
 			count = checkBelowFlags(child, count)
 		
 		return count
-
-#StInFlowの子タスク(TaskInFlow)のコストの和
-def SumTaskFlow(SIF):
-	assert isinstance(SIF, StInFlow)
-	for child in SIF.children:
-		SIF.c += child.c
-	return
-
-#TaskInFlowの子タスク(StInFlow)の最安のものを選別
-def CompStFlow(TIF):
-	assert isinstance(TIF, TaskInFlow)
-
-	min_cost_SIF = TIF.children[0]
-	if len(TIF.children) != 1: #現在2以上の子を持つ場合
-		for child in TIF.children:
-			if min_cost_SIF.c > child.c:
-				min_cost_SIF.parent = None #いままでの最安の子を親から切り離す
-				min_cost_SIF = child #最安の子をmin_cost_SIFにセット
-			else:
-				child.parent = None #最安でない子を親から切り離す
-
-	TIF.children = min_cost_SIF
-	TIF.c = min_cost_SIF.c * TIF.task.prob
-
-	return

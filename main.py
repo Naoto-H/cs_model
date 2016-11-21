@@ -3,6 +3,7 @@
 
 from def_class import *
 from def_data import *
+from def_minFlow import *
 import sys
 sys.setrecursionlimit(20000)
 
@@ -17,38 +18,47 @@ print "======"
 print flowRoot.task.prob
 print flowRoot.task.lev
 print flowRoot.task.thing
+print flowRoot.depth
 print "======"
 print flowRoot.children[0].st.lev
 print flowRoot.children[0].st.thing
 print flowRoot.children[0].st.cost
+print flowRoot.children[0].depth
 print "------"
 print flowRoot.children[1].st.lev
 print flowRoot.children[1].st.thing
 print flowRoot.children[1].st.cost
+print flowRoot.children[1].depth
 print "------"
 print flowRoot.children[2].st.lev
 print flowRoot.children[2].st.thing
 print flowRoot.children[2].st.cost
+print flowRoot.children[2].depth
 print "------"
 print flowRoot.children[3].st.lev
 print flowRoot.children[3].st.thing
 print flowRoot.children[3].st.cost
+print flowRoot.children[3].depth
 print "======"
 print flowRoot.children[0].children[0].task.prob
 print flowRoot.children[0].children[0].task.lev
 print flowRoot.children[0].children[0].task.thing
+print flowRoot.children[0].children[0].depth
 print "------"
 print flowRoot.children[0].children[1].task.prob
 print flowRoot.children[0].children[1].task.lev
 print flowRoot.children[0].children[1].task.thing
+print flowRoot.children[0].children[1].depth
 print "------"
 print flowRoot.children[1].children[0].task.prob
 print flowRoot.children[1].children[0].task.lev
 print flowRoot.children[1].children[0].task.thing
+print flowRoot.children[1].children[0].depth
 print "------"
 print flowRoot.children[2].children[0].task.prob
 print flowRoot.children[2].children[0].task.lev
 print flowRoot.children[2].children[0].task.thing
+print flowRoot.children[2].children[0].depth
 print "------"
 print flowRoot.children[3].children
 print "======"
@@ -57,40 +67,48 @@ print "------"
 print flowRoot.children[0].children[0].children[0].st.lev
 print flowRoot.children[0].children[0].children[0].st.thing
 print flowRoot.children[0].children[0].children[0].st.cost
+print flowRoot.children[0].children[0].children[0].depth
 print "------"
 print flowRoot.children[0].children[0].children[1].st.lev
 print flowRoot.children[0].children[0].children[1].st.thing
 print flowRoot.children[0].children[0].children[1].st.cost
+print flowRoot.children[0].children[0].children[1].depth
 print "------"
 print flowRoot.children[0].children[1].children
 print "------"
 print flowRoot.children[0].children[1].children[0].st.lev
 print flowRoot.children[0].children[1].children[0].st.thing
 print flowRoot.children[0].children[1].children[0].st.cost
+print flowRoot.children[0].children[1].children[0].depth
 print "------"
 print flowRoot.children[0].children[1].children[1].st.lev
 print flowRoot.children[0].children[1].children[1].st.thing
 print flowRoot.children[0].children[1].children[1].st.cost
+print flowRoot.children[0].children[1].children[1].depth
 print "------"
 print flowRoot.children[1].children[0].children
 print "------"
 print flowRoot.children[1].children[0].children[0].st.lev
 print flowRoot.children[1].children[0].children[0].st.thing
 print flowRoot.children[1].children[0].children[0].st.cost
+print flowRoot.children[1].children[0].children[0].depth
 print "------"
 print flowRoot.children[1].children[0].children[1].st.lev
 print flowRoot.children[1].children[0].children[1].st.thing
 print flowRoot.children[1].children[0].children[1].st.cost
+print flowRoot.children[1].children[0].children[1].depth
 print "------"
 print flowRoot.children[2].children[0].children
 print "------"
 print flowRoot.children[2].children[0].children[0].st.lev
 print flowRoot.children[2].children[0].children[0].st.thing
 print flowRoot.children[2].children[0].children[0].st.cost
+print flowRoot.children[2].children[0].children[0].depth
 print "------"
 print flowRoot.children[2].children[0].children[1].st.lev
 print flowRoot.children[2].children[0].children[1].st.thing
 print flowRoot.children[2].children[0].children[1].st.cost
+print flowRoot.children[2].children[0].children[1].depth
 print "======"
 print flowRoot.children[0].children[0].children[0].children
 print flowRoot.children[0].children[0].children[1].children
@@ -111,82 +129,62 @@ print flowRoot.children[0].children[1].children[0].children[0].children[0].child
 print flowRoot.children[0].children[1].children[0].children[0].children[1].children
 '''
 
-
 leaves = []
-
-def isLeaf(flow_node):
-	return flow_node.children == [] or flow_node.children is None
-
-def getLeaves(flow_node): #期待値のコストを求める関数
-	if isLeaf(flow_node):
-		flow_node.flag = True
-		leaves.append(flow_node)
-		return
-
-	for child in flow_node.children:
-		getLeaves(child)
-
-	return
-
-getLeaves(flowRoot)
-print leaves
-
-
-def MakeMinCostFlow(TIF):
-	CompStFlow(TIF)
-	
-	for sif in TIF.children:
-		SumTaskFlow(sif)
-
-		if isLeaf(sif) != True:
-			for tif in sif.children:
-				MakeMinCostFlow(tif)
-
-	return
-
+getLeaves(flowRoot, leaves) #flow_nodeの葉ノードを集める関数	
 # leaves = [(node1), (node2), ....]
 #print leaves
+
+#print deepestLeaf(leaves)
+#print exist(flowRoot, leaves)
+MakeMinCostFlow(leaves, deepestLeaf(leaves)) #flowRootには選別された木構造のみ残る
+
+
+def print_flow(flow_node):
+	print "タスク[ 確率: %f, レベル: %d, パーツ: %s ], 戦略 [ コスト: %d, レベル: %d, パーツ: %s ]" % (flow_node.task.prob, flow_node.task.lev, flow_node.task.thing, flow_node.children.st.cost, flow_node.children.st.lev, flow_node.children.st.thing)
+	if flow_node.children.children != []:
+		for child in flow_node.children.children:
+			print_flow(child)
+	else:
+		return
+
+print_flow(flowRoot)
 '''
-for minLeaf
-
-minLeaf = findMinLeaf(leaves)
-# minLeaf = (node1, 400)
-
-print minLeaf
-
-minFlow = []
-
-def extractMinFlow(flow_node):
-	if flow_node != None:
-		if isinstance(flow_node, StInFlow):
-			minFlow.append([flow_node.parent, flow_node])
-
-		extractMinFlow(flow_node.parent)
-
-	return
-
-extractMinFlow(minLeaf[0])
-# minFlow = [ [task1, st1], [task2, st3], [task3, st5], ... ]
-
-minFlow.reverse()
-
-print minFlow
-
-print minFlow[0][0].task.prob
-print minFlow[0][0].task.lev
-print minFlow[0][0].task.thing
-
-print minFlow[0][1].st.lev
-print minFlow[0][1].st.thing
-print minFlow[0][1].st.cost
-
-print minFlow[1][0].task.prob
-print minFlow[1][0].task.lev
-print minFlow[1][0].task.thing
-
-print minFlow[1][1].st.lev
-print minFlow[1][1].st.thing
-print minFlow[1][1].st.cost
+print "======"
+print flowRoot.task.prob
+print flowRoot.task.lev
+print flowRoot.task.thing
+print flowRoot.depth
+print flowRoot.c
+print "======"
+print flowRoot.children.st.lev
+print flowRoot.children.st.thing
+print flowRoot.children.st.cost
+print flowRoot.children.depth
+print flowRoot.children.c
+print "======"
+print flowRoot.children.children
+print flowRoot.children.children[0].task.prob
+print flowRoot.children.children[0].task.lev
+print flowRoot.children.children[0].task.thing
+print flowRoot.children.children[0].depth
+print "------"
+print flowRoot.children.children[1].task.prob
+print flowRoot.children.children[1].task.lev
+print flowRoot.children.children[1].task.thing
+print flowRoot.children.children[1].depth
+print "======"
+print flowRoot.children.children[0].children
+print flowRoot.children.children[1].children
+print "------"
+print flowRoot.children.children[0].children.st.lev
+print flowRoot.children.children[0].children.st.thing
+print flowRoot.children.children[0].children.st.cost
+print flowRoot.children.children[0].children.depth
+print "------"
+print flowRoot.children.children[1].children.st.lev
+print flowRoot.children.children[1].children.st.thing
+print flowRoot.children.children[1].children.st.cost
+print flowRoot.children.children[1].children.depth
 '''
 
 #パラメータを動かした時のグラフ出力
